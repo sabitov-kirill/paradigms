@@ -1,7 +1,7 @@
 package expression.exceptions;
 
 import expression.TripleExpression;
-import expression.parser.ParserException;g
+import expression.parser.ParserException;
 
 public class Main {
     public static void main(String[] args) {
