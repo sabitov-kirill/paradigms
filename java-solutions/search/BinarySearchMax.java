@@ -56,7 +56,7 @@ public class BinarySearchMax {
         return 0;
     }
 
-    // Define I: l < k <= r.
+    // Define I: -1 <= l < k <= r <= a.length.
     // Pred: a && a.len > 0 && NonDecreasingAndShifted(a) && I.
     // Post: R == max(a).
     private static int findMaxRecursive(int[] a, int l, int r) {
