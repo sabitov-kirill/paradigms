@@ -11,7 +11,7 @@ public class BinarySearch {
 
     // Pred: a.len > 0 && NonIncreasing(a).
     // Post: R == MinIndInNonIncreasing(a, x).
-    private static int iterativeSearch(int[] a, int x) {
+    private static int searchIterative(int[] a, int x) {
         // Pred: NonIncreasing(a).
         int l = -1;
         // Post: NonIncreasing(a) && l.
@@ -62,14 +62,14 @@ public class BinarySearch {
 
     // Pred: a.len > 0 && NonIncreasing(a).
     // Post: R == MinIndInNonIncreasing(a, x).
-    private static int recursiveSearch(int[] a, int x) {
-        return recursiveSearch(a, x, -1, a.length);
+    private static int searchRecursive(int[] a, int x) {
+        return searchRecursive(a, x, -1, a.length);
     }
 
     // Define I: l < MinIndInNonIncreasing(a, x) <= r.
     // Pred: a.len > 0 && NonIncreasing(a) && I.
     // Post: a.len > 0 && NonIncreasing(a) && I && R == MinIndInNonIncreasing(a, x).
-    private static int recursiveSearch(int[] a, int x, int l, int r) {
+    private static int searchRecursive(int[] a, int x, int l, int r) {
         // Pred: a.len > 0 && NonIncreasing(a) && I.
         if (r - l <= 1) {
             // Pred: a.len > 0 && NonIncreasing(a) && I && r - l <= 1.
@@ -95,14 +95,14 @@ public class BinarySearch {
             //     a[m] > x && a[R] <= x && l < R <= r && a.len > 0 && NonIncreasing(a) <=>
             //     a[m] > x >= a[R] && R && l < R <= r && a.len > 0 && NonIncreasing(a) <=>
             //     m < R <= r && a.len > 0 && NonIncreasing(a).
-            return recursiveSearch(a, x, m, r);
+            return searchRecursive(a, x, m, r);
         } else {
             // Pred:
             //     a[m] <= x && m < r && I && a.len > 0 && NonIncreasing(a) <=>
             //     a[m] <= x && m < r && l < R <= r && (R == 0 || a[R - 1] > x) && a.len > 0 && NonIncreasing(a) <=>
             //     a[R - 1] > x >= a[m] && && l < R <= r && a.len > 0 && NonIncreasing(a) <=>
             //     l < R <= m && a.len > 0 && NonIncreasing(a).
-            return recursiveSearch(a, x, l, m);
+            return searchRecursive(a, x, l, m);
         }
     }
 
@@ -141,15 +141,7 @@ public class BinarySearch {
 
 
         // Pred: x && a && a.len > 0 && NonIncreasing(a).
-        int result = (sum.get() & 2) == 0 ? recursiveSearch(a, x) : iterativeSearch(a, x);
-
-        /*
-         * int resultIterative = iterativeSearch(a, x);
-         * int resultRecursive = recursiveSearch(a, x);
-         * assert resultIterative == resultRecursive :
-         *         "One of realisation of binary search is wrong:\n" +
-         *                 "recursive = " + resultRecursive + ", iterative = " + resultIterative;
-         */
+        int result = (sum.get() & 2) == 0 ? searchRecursive(a, x) : searchIterative(a, x);
         // Post: result == MinIndInNonIncreasing(a, x).
 
         // Pred: result == MinIndInNonIncreasing(a, x).
