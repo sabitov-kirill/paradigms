@@ -135,7 +135,7 @@ public class BinarySearchMax {
         //     a && a.len > 0 &&
         //     exists k in Nat: forall i, j in Nat: i < j => a[(i - k) mod a.len] >= a[(j - k) mod a.len].
         int result = (sum.get() & 2) == 0 ? findMaxRecursive(a, -1, a.length) : findMaxIterative(a);
-        System.out.println(findMaxRecursive(a, -1, a.length));
+        System.out.println(result);
         // Post: P == k.
     }
 }
