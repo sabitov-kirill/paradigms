@@ -1,5 +1,6 @@
 # Do not store hidden files and directories, including .idea project
 .*
+*.iml
 
 # Do not store anything starting with _
 _*
