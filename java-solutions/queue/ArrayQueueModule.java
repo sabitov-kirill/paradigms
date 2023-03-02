@@ -1,6 +1,5 @@
 package queue;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -10,7 +9,8 @@ import java.util.Objects;
  * @custom.Invariant: forall i in [first, last]: a[i] != null
  */
 public class ArrayQueueModule {
-    private static Object[] elements = new Object[8];
+    public static final int DEFAULT_CAPACITY = 8;
+    private static Object[] elements = new Object[DEFAULT_CAPACITY];
     private static int last = 0, first = 0, elementsCount = 0;
 
     /* Define immutable(a: int, b: int) -> boolean:
@@ -85,15 +85,42 @@ public class ArrayQueueModule {
      * @custom.Post: first == last == 0.
      */
     public static void clear() {
-        for (int i = first; i < last; i++) {
-            elements[i] = null;
-        }
-
         first = last = 0;
         elementsCount = 0;
 
         // Arrays.fill(elements, null);
-        // elements = new Object[8];
+        elements = new Object[DEFAULT_CAPACITY];
+    }
+
+    /**
+     * Queue string representation getter function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == "[element[first], ..., element[last]]".
+     */
+    public static String toStr() {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < elementsCount; i++) {
+            sb.append(elements[(i + first) % elements.length]);
+            if (i != elementsCount - 1) {
+                sb.append(", ");
+            }
+        }
+        return sb.append("]").toString();
+    }
+
+    /**
+     * Queue array representation getter function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == { [element[first], ..., element[last]] }.
+     */
+    public static Object[] toArray() {
+        Object[] array = new Object[elementsCount];
+        for (int i = 0; i < elementsCount; i++) {
+            array[i] = elements[(i + first) % elements.length];
+        }
+        return array;
     }
 
     private static void ensureCapacity(int expectedCapacity) {

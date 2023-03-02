@@ -1,6 +1,5 @@
 package queue;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -10,7 +9,8 @@ import java.util.Objects;
  * @custom.Invariant: forall i in [first, last]: a[i] != null
  */
 public class ArrayQueueADT {
-    private Object[] elements = new Object[8];
+    private static final int DEFAULT_CAPACITY = 8;
+    private Object[] elements = new Object[DEFAULT_CAPACITY];
     private int last = 0, first = 0, elementsCount = 0;
 
     /* Define immutable(a: int, b: int) -> boolean:
@@ -18,13 +18,7 @@ public class ArrayQueueADT {
      */
 
     public static ArrayQueueADT create() {
-        ArrayQueueADT queue = new ArrayQueueADT();
-        queue.elements = new Object[8];
-        queue.last = 0;
-        queue.first = 0;
-        queue.elementsCount = 0;
-
-        return queue;
+        return new ArrayQueueADT();
     }
 
     /**
@@ -95,15 +89,43 @@ public class ArrayQueueADT {
      * @custom.Post: first == last == 0.
      */
     public static void clear(ArrayQueueADT queue) {
-        for (int i = queue.first; i < queue.last; i++) {
-            queue.elements[i] = null;
-        }
-
         queue.first = queue.last = 0;
         queue.elementsCount = 0;
 
         // Arrays.fill(queue.elements, null);
-        // queue.elements = new Object[8];
+        queue.elements = new Object[DEFAULT_CAPACITY];
+    }
+
+    /**
+     * Queue string representation getter function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == "[element[first], ..., element[last]]".
+     */
+    public static String toStr(ArrayQueueADT queue) {
+        StringBuilder sb = new StringBuilder("[");
+        for (int i = 0; i < queue.elementsCount; i++) {
+            sb.append(queue.elements[(i + queue.first) % queue.elements.length]);
+            if (i != queue.elementsCount - 1) {
+                sb.append(", ");
+            }
+        }
+
+        return sb.append("]").toString();
+    }
+
+    /**
+     * Queue array representation getter function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == { [element[first], ..., element[last]] }.
+     */
+    public static Object[] toArray(ArrayQueueADT queue) {
+        Object[] array = new Object[queue.elementsCount];
+        for (int i = 0; i < queue.elementsCount; i++) {
+            array[i] = queue.elements[(i + queue.first) % queue.elements.length];
+        }
+        return array;
     }
 
     private static void ensureCapacity(ArrayQueueADT queue, int expectedCapacity) {
