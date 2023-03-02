@@ -96,7 +96,7 @@ public class ArrayQueueModule {
      * Queue string representation getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == "[element[first], ..., element[last]]".
+     * @custom.Post: R == "[element[first], ..., element[last]]" && immutable(first, last).
      */
     public static String toStr() {
         StringBuilder sb = new StringBuilder("[");
@@ -113,7 +113,7 @@ public class ArrayQueueModule {
      * Queue array representation getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == { [element[first], ..., element[last]] }.
+     * @custom.Post: R == { [element[first], ..., element[last]] } && immutable(first, last).
      */
     public static Object[] toArray() {
         Object[] array = new Object[elementsCount];

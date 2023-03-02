@@ -100,7 +100,7 @@ public class ArrayQueueADT {
      * Queue string representation getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == "[element[first], ..., element[last]]".
+     * @custom.Post: R == "[element[first], ..., element[last]]" && immutable(first, last).
      */
     public static String toStr(ArrayQueueADT queue) {
         StringBuilder sb = new StringBuilder("[");
@@ -118,7 +118,7 @@ public class ArrayQueueADT {
      * Queue array representation getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == { [element[first], ..., element[last]] }.
+     * @custom.Post: R == { [element[first], ..., element[last]] } && immutable(first, last).
      */
     public static Object[] toArray(ArrayQueueADT queue) {
         Object[] array = new Object[queue.elementsCount];
