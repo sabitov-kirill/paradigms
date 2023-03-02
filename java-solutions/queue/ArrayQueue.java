@@ -7,7 +7,7 @@ import java.util.Objects;
  * Array queue implementation class.
  *
  * @custom.Model: a[0]..a[first]..a[last] && first >= 0.
- * @custom.Invariant: forall i in [first, last]: a[i] != null
+ * @custom.Invariant: forall i in [first, last]: a[i] != null.
  */
 public class ArrayQueue {
     public static final int DEFAULT_CAPACITY = 8;
@@ -36,7 +36,7 @@ public class ArrayQueue {
     /**
      * Get first element in queue function.
      *
-     * @custom.Pred: first - last < 0.
+     * @custom.Pred: last - first < 0.
      * @custom.Post: R == a[first] && immutable(first, last).
      */
     public Object element() {
