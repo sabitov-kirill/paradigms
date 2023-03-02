@@ -36,7 +36,7 @@ public class ArrayQueue {
     /**
      * Get first element in queue function.
      *
-     * @custom.Pred: first != last.
+     * @custom.Pred: first - last < 0.
      * @custom.Post: R == a[first] && immutable(first, last).
      */
     public Object element() {
