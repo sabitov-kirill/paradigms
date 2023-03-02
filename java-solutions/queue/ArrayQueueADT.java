@@ -1,5 +1,6 @@
 package queue;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -133,11 +134,7 @@ public class ArrayQueueADT {
             return;
         }
 
-        Object[] resizedElements = new Object[expectedCapacity * 2];
-        System.arraycopy(queue.elements, queue.first, resizedElements, 0, queue.elements.length - queue.first);
-        System.arraycopy(queue.elements, 0, resizedElements, queue.elements.length - queue.first, queue.last);
-        queue.elements = resizedElements;
-
+        queue.elements = Arrays.copyOf(toArray(queue), expectedCapacity * 2);
         queue.first = 0;
         queue.last = queue.elementsCount;
     }

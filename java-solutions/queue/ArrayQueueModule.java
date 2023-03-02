@@ -1,5 +1,6 @@
 package queue;
 
+import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -128,11 +129,7 @@ public class ArrayQueueModule {
             return;
         }
 
-        Object[] resizedElements = new Object[expectedCapacity * 2];
-        System.arraycopy(elements, first, resizedElements, 0, elements.length - first);
-        System.arraycopy(elements, 0, resizedElements, elements.length - first, last);
-        elements = resizedElements;
-
+        elements = Arrays.copyOf(toArray(), expectedCapacity * 2);
         first = 0;
         last = elementsCount;
     }
