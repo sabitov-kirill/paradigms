@@ -36,7 +36,7 @@ public class ArrayQueueModule {
     /**
      * Get first element in queue function.
      *
-     * @custom.Pred: first != last.
+     * @custom.Pred: first - last < 0.
      * @custom.Post: R == a[first] && immutable(first, last).
      */
     public static Object element() {
@@ -73,7 +73,7 @@ public class ArrayQueueModule {
      * Check if queue is empty function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == (last == first) && immutable(first, last).
+     * @custom.Post: R == (last - first < 0) && immutable(first, last).
      */
     public static boolean isEmpty() {
         return elementsCount == 0;
@@ -83,7 +83,7 @@ public class ArrayQueueModule {
      * Delete all elements from queue function.
      *
      * @custom.Pred: true.
-     * @custom.Post: first == last == 0.
+     * @custom.Post: first - last < 0.
      */
     public static void clear() {
         first = last = 0;

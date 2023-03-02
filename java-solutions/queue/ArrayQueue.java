@@ -48,7 +48,7 @@ public class ArrayQueue {
     /**
      * Remove and return fist element in queue.
      *
-     * @custom.Pred: first != last.
+     * @custom.Pred: last - first > 0.
      * @custom.Post: R == a[first] && first' = first + 1 && immutable(first', last).
      */
     public Object dequeue() {
@@ -74,7 +74,7 @@ public class ArrayQueue {
      * Check if queue is empty function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == (last == first) && immutable(first, last).
+     * @custom.Post: R == (last - first < 0) && immutable(first, last).
      */
     public boolean isEmpty() {
         return elementsCount == 0;
@@ -84,7 +84,7 @@ public class ArrayQueue {
      * Delete all elements from queue function.
      *
      * @custom.Pred: true.
-     * @custom.Post: first == last == 0.
+     * @custom.Post: first - last < 0.
      */
     public void clear() {
         first = last = 0;
