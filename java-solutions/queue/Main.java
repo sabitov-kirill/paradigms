@@ -114,7 +114,12 @@ public class Main {
     }
 
     public static void main(String[] args) {
-        Tester tester = new Tester(5000, 10000, 50000);
-        tester.testWithTiming();
+        // Tester tester = new Tester(5000, 10000, 50000);
+        // tester.testWithTiming();
+        Queue q = new LinkedQueue();
+        q.enqueue("Hello");
+        System.out.println(q.count("Hello"));
     }
+
+
 }

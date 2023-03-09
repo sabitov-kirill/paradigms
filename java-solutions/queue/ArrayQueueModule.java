@@ -6,13 +6,13 @@ import java.util.Objects;
 /**
  * Array queue implementation module.
  *
- * @custom.Model: a[0]..a[first]..a[last] && first >= 0.
- * @custom.Invariant: forall i in [first, last]: a[i] != null
+ * @custom.Model: (a[0]..a[first]..a[first + n - 1] || n == 0) && first >= 0 && n >= 0.
+ * @custom.Invariant: forall i in [first, first + n]: a[i] != null.
  */
 public class ArrayQueueModule {
     public static final int DEFAULT_CAPACITY = 8;
     private static Object[] elements = new Object[DEFAULT_CAPACITY];
-    private static int last = 0, first = 0, elementsCount = 0;
+    private static int first = 0, elementsCount = 0;
 
     /* Define immutable(a: int, b: int) -> boolean:
      *     forall i in [a, b]: a[i] = a'[i].
@@ -22,33 +22,33 @@ public class ArrayQueueModule {
      * Add element to queue function.
      *
      * @custom.Pred: element != null.
-     * @custom.Post: immutable(first, last) && last' = last + 1 && a[last'] == element
+     * @custom.Post: immutable(first, first + n - 1) && n' == n + 1 && a[first + n'] == element
      */
     public static void enqueue(Object element) {
         Objects.requireNonNull(element);
 
         ensureCapacity(elementsCount + 1);
-        elements[last] = element;
-        last = (last + 1) % elements.length;
+        elements[(first + elementsCount) % elements.length] = element;
         elementsCount++;
     }
 
     /**
      * Get first element in queue function.
      *
-     * @custom.Pred: first - last < 0.
-     * @custom.Post: R == a[first] && immutable(first, last).
+     * @custom.Pred: n > 0.
+     * @custom.Post: R == a[first] && immutable(first, first + n - 1).
      */
     public static Object element() {
         assert elementsCount > 0;
         return elements[first];
     }
 
+
     /**
      * Remove and return fist element in queue.
      *
-     * @custom.Pred: first != last.
-     * @custom.Post: R == a[first] && first' = first + 1 && immutable(first', last).
+     * @custom.Pred: n > 0.
+     * @custom.Post: R == a[first] && first' == first + 1 && immutable(first', first + n - 1).
      */
     public static Object dequeue() {
         assert elementsCount > 0;
@@ -63,7 +63,7 @@ public class ArrayQueueModule {
      * Current queue size getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == last - first + 1 && immutable(first, last).
+     * @custom.Post: R == n && immutable(first, first + n - 1).
      */
     public static int size() {
         return elementsCount;
@@ -73,7 +73,7 @@ public class ArrayQueueModule {
      * Check if queue is empty function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == (last - first < 0) && immutable(first, last).
+     * @custom.Post: R == (n == 0) && immutable(first, first + n - 1).
      */
     public static boolean isEmpty() {
         return elementsCount == 0;
@@ -83,10 +83,10 @@ public class ArrayQueueModule {
      * Delete all elements from queue function.
      *
      * @custom.Pred: true.
-     * @custom.Post: first - last < 0.
+     * @custom.Post: n == 0.
      */
     public static void clear() {
-        first = last = 0;
+        first = 0;
         elementsCount = 0;
 
         // Arrays.fill(elements, null);
@@ -97,7 +97,7 @@ public class ArrayQueueModule {
      * Queue string representation getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == "[element[first], ..., element[last]]" && immutable(first, last).
+     * @custom.Post: R == "[element[first], ..., element[first + n - 1]]" && immutable(first, last).
      */
     public static String toStr() {
         StringBuilder sb = new StringBuilder("[");
@@ -114,7 +114,7 @@ public class ArrayQueueModule {
      * Queue array representation getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == { [element[first], ..., element[last]] } && immutable(first, last).
+     * @custom.Post: R == [ element[first], ..., element[first + n - 1] ] && immutable(first, first + n - 1).
      */
     public static Object[] toArray() {
         Object[] array = new Object[elementsCount];
@@ -131,6 +131,5 @@ public class ArrayQueueModule {
 
         elements = Arrays.copyOf(toArray(), expectedCapacity * 2);
         first = 0;
-        last = elementsCount;
     }
 }

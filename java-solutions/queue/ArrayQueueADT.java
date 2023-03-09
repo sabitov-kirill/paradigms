@@ -6,18 +6,24 @@ import java.util.Objects;
 /**
  * Array queue implementation module.
  *
- * @custom.Model: a[0]..a[first]..a[last] && first >= 0.
- * @custom.Invariant: forall i in [first, last]: a[i] != null
+ * @custom.Model: (a[0]..a[first]..a[first + n - 1] || n == 0) && first >= 0 && n >= 0.
+ * @custom.Invariant: forall i in [first, first + n]: a[i] != null.
  */
 public class ArrayQueueADT {
-    private static final int DEFAULT_CAPACITY = 8;
+    public static final int DEFAULT_CAPACITY = 8;
     private Object[] elements = new Object[DEFAULT_CAPACITY];
-    private int last = 0, first = 0, elementsCount = 0;
+    private int first = 0, elementsCount = 0;
 
     /* Define immutable(a: int, b: int) -> boolean:
      *     forall i in [a, b]: a[i] = a'[i].
      */
 
+    /**
+     * Array queue ADT creation function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == new array queue.
+     */
     public static ArrayQueueADT create() {
         return new ArrayQueueADT();
     }
@@ -26,33 +32,33 @@ public class ArrayQueueADT {
      * Add element to queue function.
      *
      * @custom.Pred: element != null.
-     * @custom.Post: immutable(first, last) && last' = last + 1 && a[last'] == element
+     * @custom.Post: immutable(first, first + n - 1) && n' == n + 1 && a[first + n'] == element
      */
     public static void enqueue(ArrayQueueADT queue, Object element) {
         Objects.requireNonNull(element);
 
         ensureCapacity(queue, queue.elementsCount + 1);
-        queue.elements[queue.last] = element;
-        queue.last = (queue.last + 1) % queue.elements.length;
+        queue.elements[(queue.first + queue.elementsCount) % queue.elements.length] = element;
         queue.elementsCount++;
     }
 
     /**
      * Get first element in queue function.
      *
-     * @custom.Pred: first != last.
-     * @custom.Post: R == a[first] && immutable(first, last).
+     * @custom.Pred: n > 0.
+     * @custom.Post: R == a[first] && immutable(first, first + n - 1).
      */
     public static Object element(ArrayQueueADT queue) {
         assert queue.elementsCount > 0;
         return queue.elements[queue.first];
     }
 
+
     /**
      * Remove and return fist element in queue.
      *
-     * @custom.Pred: first != last.
-     * @custom.Post: R == a[first] && first' = first + 1 && immutable(first', last).
+     * @custom.Pred: n > 0.
+     * @custom.Post: R == a[first] && first' == first + 1 && immutable(first', first + n - 1).
      */
     public static Object dequeue(ArrayQueueADT queue) {
         assert queue.elementsCount > 0;
@@ -67,7 +73,7 @@ public class ArrayQueueADT {
      * Current queue size getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == last - first + 1 && immutable(first, last).
+     * @custom.Post: R == n && immutable(first, first + n - 1).
      */
     public static int size(ArrayQueueADT queue) {
         return queue.elementsCount;
@@ -77,7 +83,7 @@ public class ArrayQueueADT {
      * Check if queue is empty function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == (last == first) && immutable(first, last).
+     * @custom.Post: R == (n == 0) && immutable(first, first + n - 1).
      */
     public static boolean isEmpty(ArrayQueueADT queue) {
         return queue.elementsCount == 0;
@@ -87,13 +93,13 @@ public class ArrayQueueADT {
      * Delete all elements from queue function.
      *
      * @custom.Pred: true.
-     * @custom.Post: first == last == 0.
+     * @custom.Post: n == 0.
      */
     public static void clear(ArrayQueueADT queue) {
-        queue.first = queue.last = 0;
+        queue.first = 0;
         queue.elementsCount = 0;
 
-        // Arrays.fill(queue.elements, null);
+        // Arrays.fill(elements, null);
         queue.elements = new Object[DEFAULT_CAPACITY];
     }
 
@@ -101,7 +107,7 @@ public class ArrayQueueADT {
      * Queue string representation getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == "[element[first], ..., element[last]]" && immutable(first, last).
+     * @custom.Post: R == "[element[first], ..., element[first + n - 1]]" && immutable(first, last).
      */
     public static String toStr(ArrayQueueADT queue) {
         StringBuilder sb = new StringBuilder("[");
@@ -111,7 +117,6 @@ public class ArrayQueueADT {
                 sb.append(", ");
             }
         }
-
         return sb.append("]").toString();
     }
 
@@ -119,7 +124,7 @@ public class ArrayQueueADT {
      * Queue array representation getter function.
      *
      * @custom.Pred: true.
-     * @custom.Post: R == { [element[first], ..., element[last]] } && immutable(first, last).
+     * @custom.Post: R == [ element[first], ..., element[first + n - 1] ] && immutable(first, first + n - 1).
      */
     public static Object[] toArray(ArrayQueueADT queue) {
         Object[] array = new Object[queue.elementsCount];
@@ -136,6 +141,5 @@ public class ArrayQueueADT {
 
         queue.elements = Arrays.copyOf(toArray(queue), expectedCapacity * 2);
         queue.first = 0;
-        queue.last = queue.elementsCount;
     }
 }
