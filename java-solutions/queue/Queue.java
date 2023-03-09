@@ -83,6 +83,19 @@ public interface Queue extends Iterable<Object> {
      */
     int count(Object element);
 
+    /**
+     * Queue element index getter function (first occurrence)  function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == (index of first occurrence || -1 && element is not in queue).
+     */
     int indexOf(Object element);
+
+    /**
+     * Queue element index getter function (last occurrence)  function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == (index of last occurrence || -1 && element is not in queue).
+     */
     int lastIndexOf(Object element);
 }

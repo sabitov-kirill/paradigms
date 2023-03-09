@@ -1,6 +1,5 @@
 package queue;
 
-import java.util.Arrays;
 import java.util.Objects;
 
 /**
@@ -69,6 +68,26 @@ public abstract class AbstractQueue implements Queue {
     }
 
     /**
+     * Current queue size getter function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == n && immutable(first, first + n - 1).
+     */
+    public int size() {
+        return elementsCount;
+    }
+
+    /**
+     * Check if queue is empty function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == (n == 0) && immutable(first, first + n - 1).
+     */
+    public boolean isEmpty() {
+        return elementsCount == 0;
+    }
+
+    /**
      * Queue string representation getter function.
      *
      * @custom.Pred: true.
@@ -121,6 +140,12 @@ public abstract class AbstractQueue implements Queue {
         return result;
     }
 
+    /**
+     * Queue element index getter function (first occurrence)  function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == (index of first occurrence || -1 && element is not in queue).
+     */
     public int indexOf(Object elementToFind) {
         int index = 0;
         for (Object element: this) {
@@ -132,6 +157,12 @@ public abstract class AbstractQueue implements Queue {
         return -1;
     }
 
+    /**
+     * Queue element index getter function (last occurrence)  function.
+     *
+     * @custom.Pred: true.
+     * @custom.Post: R == (index of last occurrence || -1 && element is not in queue).
+     */
     public int lastIndexOf(Object elementToFind) {
         int index = 0, resultIndex = -1;
         for (Object element: this) {
@@ -142,25 +173,5 @@ public abstract class AbstractQueue implements Queue {
         }
 
         return resultIndex;
-    }
-
-    /**
-     * Current queue size getter function.
-     *
-     * @custom.Pred: true.
-     * @custom.Post: R == n && immutable(first, first + n - 1).
-     */
-    public int size() {
-        return elementsCount;
-    }
-
-    /**
-     * Check if queue is empty function.
-     *
-     * @custom.Pred: true.
-     * @custom.Post: R == (n == 0) && immutable(first, first + n - 1).
-     */
-    public boolean isEmpty() {
-        return elementsCount == 0;
     }
 }
