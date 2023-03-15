@@ -1,5 +1,7 @@
 package expression.parser;
 
+import expression.generic.Cat;
+
 import java.util.function.Supplier;
 
 /**

@@ -1,14 +1,15 @@
 package expression.exceptions;
 
-import expression.TripleExpression;
+import expression.CommonExpression;
 import expression.parser.*;
 
 public class ExpressionParser implements TripleParser {
     @Override
-    public TripleExpression parse(String expression)
+    public CommonExpression parse(String expression)
             throws ParserArgumentExpectedException, ParserEOFException,
             ParserUnexpectedCharException, ParserConstantOverflowException {
-        ExpressionParserImpl parser = new ExpressionParserImpl(expression, new CheckedOperatorFactory());
+        ExpressionParserImpl<CommonExpression> parser =
+                new ExpressionParserImpl<>(expression, new CheckedOperatorFactory());
         return parser.parse();
     }
 }

@@ -2,7 +2,8 @@ package expression.exceptions;
 
 import expression.*;
 
-public class CheckedOperatorFactory implements OperatorFactory {
+public class CheckedOperatorFactory extends DefaultOperatorFactory {
+    @Override
     public AbstractBinaryOperator getBinaryOperator(String sign, CommonExpression left, CommonExpression right) {
         return switch (sign) {
             case "+" -> new CheckedAdd(left, right);
@@ -17,6 +18,7 @@ public class CheckedOperatorFactory implements OperatorFactory {
         };
     }
 
+    @Override
     public AbstractUnaryOperator getUnaryOperator(String sign, CommonExpression operand) {
         return switch (sign) {
             case "-" -> new CheckedNegate(operand);

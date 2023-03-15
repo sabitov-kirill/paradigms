@@ -1,6 +1,9 @@
 package queue;
 
+import java.util.Iterator;
 import java.util.Objects;
+import java.util.function.UnaryOperator;
+import java.util.stream.Stream;
 
 /**
  * Abstract queue class.
@@ -120,7 +123,6 @@ public abstract class AbstractQueue implements Queue {
         for (Object element: this) {
             array[iterations++] = element;
         }
-
         return array;
     }
 

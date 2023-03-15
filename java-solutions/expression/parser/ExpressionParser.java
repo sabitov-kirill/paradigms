@@ -1,12 +1,13 @@
 package expression.parser;
 
-import expression.DefaultOperatorFactory;
-import expression.TripleExpression;
+import expression.*;
 
 public class ExpressionParser implements TripleParser {
     @Override
     public TripleExpression parse(String expression) {
-        ExpressionParserImpl parser = new ExpressionParserImpl(expression, new DefaultOperatorFactory());
+        ExpressionParserImpl<CommonExpression> parser =
+                new ExpressionParserImpl<>(expression, new DefaultOperatorFactory());
+
         try {
             return parser.parse();
         } catch (ParserException e) {

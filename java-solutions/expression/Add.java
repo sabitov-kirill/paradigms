@@ -10,6 +10,7 @@ public class Add extends AbstractBinaryOperator {
         return "+";
     }
 
+    @Override
     public int evaluateImpl(int a, int b) {
         return a + b;
     }

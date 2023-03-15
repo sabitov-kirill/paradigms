@@ -1,17 +1,21 @@
 
-package expression;
+package expression.generic.operators;
 
-public abstract class AbstractBinaryOperator extends AbstractOperator {
-    private final CommonExpression left, right;
+import expression.generic.evaluators.ExpressionExecutor;
+import expression.generic.operators.ExecutedAbstractOperator;
+
+public abstract class ExecutedAbstractBinaryOperator<T extends Number & Comparable<T>> extends ExecutedAbstractOperator<T> {
+    private final ExecutedCommonExpression<T> left, right;
     private final boolean associative;
     private final boolean distributivity;
     private final boolean distributive;
 
-    public AbstractBinaryOperator(CommonExpression left, CommonExpression right,
-                                  boolean associative, boolean distributivity, boolean distributive,
-                                  int priority) {
-        super(priority);
-        
+    public ExecutedAbstractBinaryOperator(ExpressionExecutor<T> executor,
+                                          ExecutedCommonExpression<T> left, ExecutedCommonExpression<T> right,
+                                          boolean associative, boolean distributivity, boolean distributive,
+                                          int priority) {
+        super(priority, executor);
+
         this.left = left;
         this.right = right;
         this.associative = associative;
@@ -21,12 +25,10 @@ public abstract class AbstractBinaryOperator extends AbstractOperator {
 
     public abstract String getOperatorSign();
 
-    public abstract int evaluateImpl(int a, int b);
-
-    public abstract double evaluateImpl(double a, double b);
+    public abstract T evaluateImpl(T a, T b);
 
     @Override
-    public int evaluate(int x, int y, int z) {
+    public T evaluate(T x, T y, T z) {
         return evaluateImpl(left.evaluate(x, y, z), right.evaluate(x, y, z));
     }
 
@@ -37,8 +39,8 @@ public abstract class AbstractBinaryOperator extends AbstractOperator {
 
     @Override
     public String toMiniString() {
-        boolean leftBrackets = left instanceof AbstractBinaryOperator op && getPriority() > op.getPriority();
-        boolean rightBrackets = right instanceof AbstractBinaryOperator op
+        boolean leftBrackets = left instanceof ExecutedAbstractBinaryOperator<?> op && getPriority() > op.getPriority();
+        boolean rightBrackets = right instanceof ExecutedAbstractBinaryOperator<?> op
                 && (getPriority() > op.getPriority() || (!associative && getPriority() == op.getPriority())
                 || (this.distributivity && !op.distributive));
 
@@ -55,8 +57,7 @@ public abstract class AbstractBinaryOperator extends AbstractOperator {
 
     @Override
     public boolean equals(Object other) {
-        if (other != null && other.getClass() == this.getClass()) {
-            AbstractBinaryOperator otherBinaryOperation = (AbstractBinaryOperator) other;
+        if (other instanceof ExecutedAbstractBinaryOperator<?> otherBinaryOperation) {
             return left.equals(otherBinaryOperation.left) && right.equals(otherBinaryOperation.right);
         }
         return false;

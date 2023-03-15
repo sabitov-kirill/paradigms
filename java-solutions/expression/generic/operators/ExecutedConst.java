@@ -1,19 +1,16 @@
-package expression;
+package expression.generic.operators;
 
-public class Const implements CommonExpression {
-    private final Number value;
 
-    public Const(int value) {
-        this.value = value;
-    }
+public class ExecutedConst<T extends Number & Comparable<T>> implements ExecutedCommonExpression<T> {
+    private final T value;
 
-    public Const(double value) {
+    public ExecutedConst(T value) {
         this.value = value;
     }
 
     @Override
-    public int evaluate(int x, int y, int z) {
-        return value.intValue();
+    public T evaluate(T x, T y, T z) {
+        return value;
     }
 
     @Override
@@ -28,7 +25,7 @@ public class Const implements CommonExpression {
 
     @Override
     public boolean equals(Object other) {
-        if (other instanceof Const otherConst) {
+        if (other instanceof ExecutedConst<?> otherConst) {
             return otherConst.value.equals(value);
         }
         return false;

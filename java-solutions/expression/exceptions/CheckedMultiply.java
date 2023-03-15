@@ -21,4 +21,18 @@ public class CheckedMultiply extends Multiply {
 
         return res;
     }
+
+    public static boolean checkOverflow(int a, int b) {
+        if (a > 0 && b > 0) {
+            return a > Integer.MAX_VALUE / b;
+        } else if (a < 0 && b < 0) {
+            return b < Integer.MAX_VALUE / a;
+        } else if (a < 0 && b > 0) {
+            return a < Integer.MIN_VALUE / b;
+        } else if (a > 0 && b < 0) {
+            return b < Integer.MIN_VALUE / a;
+        } else {
+            return false;
+        }
+    }
 }

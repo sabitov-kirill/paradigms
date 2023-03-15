@@ -1,37 +1,27 @@
 package expression.parser;
 
-import expression.CommonExpression;
-import expression.Const;
 import expression.OperatorFactory;
-import expression.Variable;
 
 import static expression.parser.PriorityLevel.OPERATORS_BY_PRIOR;
 
-
-// :NOTE:  Expected argument at argument position (3) (for expression f=1 + (x * y - ) + 3)
-// непонятно, что такое позиция, особенно если закинуть побольше унарных минусов
-
-// :NOTE:  Expected argument at argument position (0) (for expression f=-2147483649)
-// вполне себе аргумент, здесь должно быть другое сообщение
-public class ExpressionParserImpl extends BaseParser {
+public class ExpressionParserImpl<T> extends BaseParser {
     private static final int MAX_PRIOR = OPERATORS_BY_PRIOR.size() - 1;
-    private final OperatorFactory operatorFactory;
-    private int currentTokenPosition = 0;
+    private final OperatorFactory<T> operatorFactory;
 
-    public ExpressionParserImpl(String source, OperatorFactory operatorFactory) {
+    public ExpressionParserImpl(String source, OperatorFactory<T> operatorFactory) {
         super(source);
         this.operatorFactory = operatorFactory;
     }
 
-    public CommonExpression parse()
+    public T parse()
             throws ParserArgumentExpectedException, ParserEOFException,
             ParserUnexpectedCharException, ParserConstantOverflowException {
-        CommonExpression expression = parseTerm(0);
+        T expression = parseTerm(0);
         expectEof();
         return expression;
     }
 
-    public CommonExpression parseTerm(int priority)
+    public T parseTerm(int priority)
             throws ParserArgumentExpectedException, ParserUnexpectedCharException, ParserConstantOverflowException {
         // Unary priority levels parsed separated
         // (1, isUnary) -> (2, isUnary) -> ... -> (MAX_PRIOR, true)
@@ -53,7 +43,7 @@ public class ExpressionParserImpl extends BaseParser {
         }
 
         // Increase priority (recursion level) to get left operand
-        CommonExpression result = parseTerm(priority + 1);
+        T result = parseTerm(priority + 1);
         String currentOperatorSign;
 
         // Keep taking operations with same priority
@@ -70,7 +60,7 @@ public class ExpressionParserImpl extends BaseParser {
 
             if (!currentOperatorSign.isEmpty()) {
                 expectOperatorSpacing(currentOperatorSign);
-                CommonExpression right = parseTerm(priority + 1);
+                T right = parseTerm(priority + 1);
                 result = operatorFactory.getBinaryOperator(currentOperatorSign, result, right);
             }
         } while (!currentOperatorSign.isEmpty());
@@ -78,12 +68,12 @@ public class ExpressionParserImpl extends BaseParser {
         return result;
     }
 
-    private CommonExpression parseUnary()
+    private T parseUnary()
             throws ParserArgumentExpectedException, ParserUnexpectedCharException, ParserConstantOverflowException {
         skipWhitespace();
 
         if (take('(')) {
-            CommonExpression expression = parseTerm(0);
+            T expression = parseTerm(0);
             expect(')');
             return expression;
         }
@@ -101,10 +91,7 @@ public class ExpressionParserImpl extends BaseParser {
             }
         }
 
-        CommonExpression expression = testVariable() ? takeVariable() : takeConst(negatedConst);
-
-        currentTokenPosition++;
-        return expression;
+        return testVariable() ? takeVariable() : takeConst(negatedConst);
 
     }
 
@@ -112,11 +99,11 @@ public class ExpressionParserImpl extends BaseParser {
         return test('x') || test('y') || test('z');
     }
 
-    private Variable takeVariable() {
-        return new Variable(String.valueOf(take()));
+    private T takeVariable() {
+        return operatorFactory.getVariable(String.valueOf(take()));
     }
 
-    private Const takeConst(boolean isNegated) throws ParserArgumentExpectedException, ParserConstantOverflowException {
+    private T takeConst(boolean isNegated) throws ParserArgumentExpectedException, ParserConstantOverflowException {
         StringBuilder integerBuilder = new StringBuilder();
         if (isNegated) {
             integerBuilder.append('-');
@@ -129,7 +116,7 @@ public class ExpressionParserImpl extends BaseParser {
         }
 
         try {
-            return new Const(Integer.parseInt(integerBuilder.toString()));
+            return operatorFactory.getConst(Integer.parseInt(integerBuilder.toString()));
         } catch (NumberFormatException e) {
             throw new ParserConstantOverflowException(integerBuilder.toString(), sourceData);
         }

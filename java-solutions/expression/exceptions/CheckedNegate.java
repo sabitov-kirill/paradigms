@@ -10,10 +10,14 @@ public class CheckedNegate extends Negate {
 
     @Override
     public int evaluateImpl(int a) {
-        if (a == Integer.MIN_VALUE) {
+        if (checkOverflow(a)) {
             throw new ExpressionOverflowException(this);
         }
 
         return -a;
+    }
+
+    public static boolean checkOverflow(int a) {
+        return a == Integer.MIN_VALUE;
     }
 }

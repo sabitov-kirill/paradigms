@@ -1,6 +1,6 @@
 package expression;
 
-public class DefaultOperatorFactory implements OperatorFactory {
+public class DefaultOperatorFactory implements OperatorFactory<CommonExpression> {
     public AbstractBinaryOperator getBinaryOperator(String sign, CommonExpression left, CommonExpression right) {
         return switch (sign) {
             case "+" -> new Add(left, right);
@@ -21,5 +21,13 @@ public class DefaultOperatorFactory implements OperatorFactory {
             case "count" -> new CountBits(operand);
             default -> throw new IllegalArgumentException("Unknown operator sign '" + sign + "'");
         };
+    }
+
+    public Variable getVariable(String name) {
+        return new Variable(name);
+    }
+
+    public Const getConst(int value) {
+        return new Const(value);
     }
 }

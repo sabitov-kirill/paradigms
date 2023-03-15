@@ -1,19 +1,19 @@
-package expression;
+package expression.generic.operators;
 
-public class Variable implements CommonExpression {
+public class ExecutedVariable<T extends Number & Comparable<T>> implements ExecutedCommonExpression<T> {
     private final String name;
 
-    public Variable(String name) {
+    public ExecutedVariable(String name) {
         this.name = name;
     }
 
     @Override
-    public int evaluate(int x, int y, int z) {
+    public T evaluate(T x, T y, T z) {
         return switch (name) {
             case "x" -> x;
             case "y" -> y;
             case "z" -> z;
-            default -> 0;
+            default -> throw new IllegalArgumentException("Unsupported variable name '" + name + "'");
         };
     }
 
@@ -29,7 +29,7 @@ public class Variable implements CommonExpression {
 
     @Override
     public boolean equals(Object other) {
-        return other instanceof Variable otherVariable
+        return other instanceof ExecutedVariable<?> otherVariable
                 && otherVariable.name.equals(name);
     }
 }
