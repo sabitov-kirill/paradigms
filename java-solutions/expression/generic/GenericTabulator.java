@@ -10,6 +10,9 @@ import java.util.Map;
 public class GenericTabulator implements Tabulator {
     private final Map<String, ExpressionExecutor<?>> executors = Map.of(
             "i", new IntegerExpressionExecutor(true),
+            "u", new IntegerExpressionExecutor(false),
+            "s", new ShortExpressionExecutor(),
+            "f", new FloatExpressionExecutor(),
             "d", new DoubleExpressionExecutor(),
             "bi", new BigIntegerExpressionExecutor()
     );
