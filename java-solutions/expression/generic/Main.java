@@ -1,16 +1,19 @@
 package expression.generic;
 
-import java.util.*;
-
 public class Main {
-    private static class A {
-        public A(){}
-    }
 
-    public static void main(String[] args) {
-        Map<Integer, Integer> relations = new HashMap<>();
-        relations.put(1, 2);
-        relations.put(3, 4);
-        relations.forEach((k, v) -> relations.put(v, k));
+    public static void main(String[] args) throws Exception {
+        Object[][][] values = new GenericTabulator().tabulate(
+                args[0].substring(1),
+                args[1],
+                -2, 2, -2, 2, -2, 2
+        );
+        for (int i = 0; i <= 4; i++) {
+            for (int j = 0; j <= 4; j++) {
+                for (int k = 0; k <= 4; k++) {
+                    System.out.println(values[i][j][k]);
+                }
+            }
+        }
     }
 }
