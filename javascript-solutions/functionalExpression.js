@@ -2,7 +2,11 @@
  * Operators
  *=============================================*/
 
-const variable = (name) => (x, y, z) => ({ x, y, z })[name];
+// Variable names: [ x, y, z, var1, var2, ..., varN ]
+const defaultVariables = { x: 0, y: 1, z: 2 }
+const variable = (name) => (...args) => name in defaultVariables ?
+    args[defaultVariables[name]] :
+    args[2 + parseInt(name.match(/\d+/)[0])];
 
 const cnst = value => () => value;
 const one = cnst(1);
@@ -10,7 +14,7 @@ const two = cnst(2);
 const pi = cnst(Math.PI);
 const e = cnst(Math.E);
 
-const operator = f => (...expressions) => (x, y, z) => f(...expressions.map(expression => expression(x, y, z)));
+const operator = f => (...expressions) => (...args) => f(...expressions.map(expression => expression(...args)));
 
 const arrayIndexByRelation = (binaryRelation, size) => operator((...array) => array.slice(0, size).reduce(
     (bestIndex, value, index) => binaryRelation(value, array[bestIndex]) ? bestIndex : index, -1
