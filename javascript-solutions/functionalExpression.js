@@ -38,7 +38,7 @@ const cosh = operator(Math.cosh);
  * Expression parser
  *=============================================*/
 
-let parse = (source) => {
+const parse = (source) => {
     const cnstAliases = { one, two };
     const variableNames = ['x', 'y', 'z'];
     const operators = {
@@ -60,7 +60,7 @@ let parse = (source) => {
         'cos':     { operation: cos,      arity: 1 },
     };
 
-    let stack = [];
+    const stack = [];
     source.trim().split(/\s+/).forEach(token => {
         let result;
         if (token in operators) {
