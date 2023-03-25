@@ -6,7 +6,7 @@
 const defaultVariables = { x: 0, y: 1, z: 2 }
 const variable = (name) => (...args) => name in defaultVariables ?
     args[defaultVariables[name]] :
-    args[2 + parseInt(name.match(/\d+/)[0])];
+    args[Object.keys(defaultVariables).length + parseInt(name.match(/var(\d+)/)[1]) - 1];
 
 const cnst = value => () => value;
 const one = cnst(1);
@@ -84,4 +84,23 @@ const parse = (source) => {
     });
 
     return stack[0];
+}
+
+// ((x * y) - (2 * z)) + var1
+let expression = add(
+    subtract(
+        multiply(
+            variable("x"),
+            variable("y"),
+        ),
+        multiply(
+            cnst(2),
+            variable("z")
+        )
+    ),
+    variable("var1")
+)
+
+for (let x = 0; x <= 10; x++) {
+    console.log(expression(x, 1, 0, 2 * x))
 }
