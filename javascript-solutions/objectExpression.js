@@ -93,7 +93,7 @@ const Multiply = constructOperator("*", (x, y) => x * y, function (diffVariableN
         new Multiply(this.expressions[0].diff(diffVariableName), this.expressions[1]),
         new Multiply(this.expressions[1].diff(diffVariableName), this.expressions[0]),
     );
-},);
+});
 const Divide = constructOperator("/", (x, y) => x / y, function (diffVariableName) {
     return new Divide(new Subtract(
         new Multiply(this.expressions[0].diff(diffVariableName), this.expressions[1]),
@@ -103,9 +103,7 @@ const Divide = constructOperator("/", (x, y) => x / y, function (diffVariableNam
 const Negate = constructOperator("negate", x => -x);
 
 const { ConstructedOperatorN: SumrecN, constructConcreteNOperatorN: constructSumrecN } = constructOperatorN(
-    "sumrec",
-    (...args) => { return args.reduce((sum, arg) => sum + 1 / arg, 0); },
-    function (diffVariableName) {
+    "sumrec", (...args) => args.reduce((sum, arg) => sum + 1 / arg, 0), function (diffVariableName) {
         return this.expressions.reduce((result, current) => new Add(
             result, new Negate(new Divide(
                 current.diff(diffVariableName),
@@ -121,9 +119,7 @@ const Sumrec4 = constructSumrecN(4);
 const Sumrec5 = constructSumrecN(5);
 
 const { ConstructedOperatorN: HMeanN, constructConcreteNOperatorN: constructHMeanN } = constructOperatorN(
-    "hmean",
-    (...args) => { return args.length / SumrecN.prototype.f(...args); },
-    function (diffVariableName) {
+    "hmean",(...args) => args.length / SumrecN.prototype.f(...args), function (diffVariableName) {
         const sumrecN = new SumrecN(this.expressions.length, ...this.expressions);
         return new Divide(
             new Multiply(new Const(-this.expressions.length), SumrecN.prototype.diff.call(this, diffVariableName)),
@@ -131,7 +127,6 @@ const { ConstructedOperatorN: HMeanN, constructConcreteNOperatorN: constructHMea
         );
     }
 );
-
 
 const HMean2 = constructHMeanN(2);
 const HMean3 = constructHMeanN(3);
@@ -146,19 +141,18 @@ const parse = (source) => {
     const operators = Object.fromEntries([Add, Subtract, Multiply, Divide, Negate].map(op => [op.prototype.sign, op]));
     const templatedOperators = [ [ /sumrec(\d+)/, SumrecN ], [ /hmean(\d+)/, HMeanN] ];
     return source.trim().split(/\s+/).reduce((stack, token) => {
-        const { constructor, arity, isTemplated, found: tokenIsOperator } = token in operators ? {
-            constructor: operators[token], arity: operators[token].prototype.f.length, isTemplated: false, found: true
-        } : templatedOperators.reduce(
-            (result, [ regex, constructor ]) => {
-                const match = token.match(regex);
-                return result.found ? result : {
-                    found: match != null, isTemplated: true, ...(match ? { constructor, arity: parseInt(match[1]) } : {})
-                };
-            }, { found : false }
-        );
-        if (tokenIsOperator) {
-            stack.push(!isTemplated ? new constructor(...stack.splice(stack.length - arity, arity)) :
-                                      new constructor(arity, ...stack.splice(stack.length - arity, arity)));
+        const { constructor, arity, tokenType } = token in operators ? {
+            constructor: operators[token], arity: operators[token].prototype.f.length, tokenType: 'operator'
+        } : templatedOperators.reduce((result, [ regex, constructor ]) => {
+            const match = token.match(regex);
+            return match === null || result.found ? result : {
+                found: true, tokenType: 'templatedOperator', constructor, arity: parseInt(match[1])
+            };
+        }, { found : false });
+        if (tokenType === 'operator') {
+            stack.push(new constructor(...stack.splice(stack.length - arity, arity)));
+        } else if (tokenType === 'templatedOperator') {
+            stack.push(new constructor(arity, ...stack.splice(stack.length - arity, arity)));
         } else if (Variable.isName(token)) {
             stack.push(new Variable(token));
         } else {
@@ -167,4 +161,3 @@ const parse = (source) => {
         return stack;
     }, [])[0];
 }
-parse("y negate").evaluate()
