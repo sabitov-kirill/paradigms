@@ -46,6 +46,7 @@ Operator.prototype = {
     },
 }
 
+const operators = {};
 const constructOperator = (sign, f, diff) => {
     function ConstructedOperator(...expressions) { Operator.call(this, ...expressions); }
     ConstructedOperator.prototype = {
@@ -58,9 +59,11 @@ const constructOperator = (sign, f, diff) => {
         ConstructedOperator.prototype.diff = diff;
     }
 
+    operators[sign] = ConstructedOperator;
     return ConstructedOperator;
 }
 
+const templatedOperators = [];
 const constructOperatorN = (sign, f, diff) => {
     function ConstructedOperatorN(n, ...expressions) {
         Operator.call(this, ...expressions.slice(0, n));
@@ -76,13 +79,14 @@ const constructOperatorN = (sign, f, diff) => {
     }
 
     const constructConcreteNOperatorN = n => {
-        function ConstructedSumrecN(...expressions) {
+        function ConstructedOperatorConcreteN(...expressions) {
             ConstructedOperatorN.call(this, n, ...expressions);
         }
-        ConstructedSumrecN.prototype = { ...ConstructedOperatorN.prototype };
-        return ConstructedSumrecN;
+        ConstructedOperatorConcreteN.prototype = { ...ConstructedOperatorN.prototype };
+        return ConstructedOperatorConcreteN;
     }
 
+    templatedOperators.push([ new RegExp(sign + "(\\d+)"), ConstructedOperatorN ]);
     return { ConstructedOperatorN, constructConcreteNOperatorN };
 }
 
@@ -101,6 +105,8 @@ const Divide = constructOperator("/", (x, y) => x / y, function (diffVariableNam
     ), new Multiply(this.expressions[1], this.expressions[1]));
 });
 const Negate = constructOperator("negate", x => -x);
+const ArcTan = constructOperator("atan", Math.atan, );
+const ArcTan2 = constructOperator("atan2", Math.atan2);
 
 const { ConstructedOperatorN: SumrecN, constructConcreteNOperatorN: constructSumrecN } = constructOperatorN(
     "sumrec", (...args) => args.reduce((sum, arg) => sum + 1 / arg, 0), function (diffVariableName) {
@@ -138,8 +144,6 @@ const HMean5 = constructHMeanN(5);
  *=============================================*/
 
 const parse = (source) => {
-    const operators = Object.fromEntries([Add, Subtract, Multiply, Divide, Negate].map(op => [op.prototype.sign, op]));
-    const templatedOperators = [ [ /sumrec(\d+)/, SumrecN ], [ /hmean(\d+)/, HMeanN] ];
     return source.trim().split(/\s+/).reduce((stack, token) => {
         const { constructor, arity, tokenType } = token in operators ? {
             constructor: operators[token], arity: operators[token].prototype.f.length, tokenType: 'operator'
@@ -150,9 +154,9 @@ const parse = (source) => {
             };
         }, { found : false });
         if (tokenType === 'operator') {
-            stack.push(new constructor(...stack.splice(stack.length - arity, arity)));
+            stack.push(new constructor(...stack.splice(-arity)));
         } else if (tokenType === 'templatedOperator') {
-            stack.push(new constructor(arity, ...stack.splice(stack.length - arity, arity)));
+            stack.push(new constructor(arity, ...stack.splice(-arity)));
         } else if (Variable.isName(token)) {
             stack.push(new Variable(token));
         } else {
