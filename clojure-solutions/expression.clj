@@ -11,9 +11,9 @@
 (def-op exp #(Math/exp %))
 (def-op ln #(Math/log %))
 (def-op arcTan2 #(Math/atan2 %1 %2))
-(defn arcTan [argument] ((operator #(Math/atan %)) argument))
+(defn atan [argument] ((operator #(Math/atan %)) argument))
 (defn negate [argument] ((operator -) argument))
-(def ops {'+ add '- subtract '* multiply '/ divide 'exp exp 'ln ln 'negate negate 'atan arcTan 'atan2 arcTan2})
+(def ops {'+ add '- subtract '* multiply '/ divide 'exp exp 'ln ln 'negate negate 'atan atan 'atan2 arcTan2})
 
 (def parseFunction
   (letfn [(build-ast [token]
