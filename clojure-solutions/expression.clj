@@ -10,9 +10,11 @@
 (def-op divide fixed-numbers-divide)
 (def-op exp #(Math/exp %))
 (def-op ln #(Math/log %))
+(def-op atan #(Math/atan %))
 (def-op atan2 #(Math/atan2 %1 %2))
-(defn atan [argument] ((operator #(Math/atan %)) argument))
-(defn negate [argument] ((operator -) argument))
+(def-op arcTan #(Math/atan %))
+(def-op arcTan2 #(Math/atan2 %1 %2))
+(def-op negate -)
 (def ops {'+ add '- subtract '* multiply '/ divide 'exp exp 'ln ln 'negate negate 'atan atan 'atan2 atan2})
 
 (def parseFunction
