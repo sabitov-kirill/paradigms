@@ -72,5 +72,5 @@
 (defn toString [expr] (.toString expr))
 
 (def ops-object {'+ Add '- Subtract '* Multiply '/ Divide 'negate Negate
-                 'sin Sin 'cos Cos 'atan Atan 'atan2 Atan2})
+                 'sin Sin 'cos Cos 'sinh Sinh 'cosh Cosh 'atan Atan 'atan2 Atan2})
 (def parseObject (parser Constant Variable ops-object))
