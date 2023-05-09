@@ -15,8 +15,8 @@
 (def-op ln math/log)
 (def-op atan math/atan)
 (def-op atan2 math/atan2)
-(def    arcTan atan)
-(def    arcTan2 atan2)
+(def arcTan atan)
+(def arcTan2 atan2)
 (def-op negate -)
 (def ops-functional {'+ add '- subtract '* multiply '/ divide 'exp exp 'ln ln 'negate negate 'atan atan 'atan2 atan2})
 
@@ -33,11 +33,13 @@
 
 ; Object expressions
 (definterface IExpression
-  (^Number evaluate [vars]))
+  (^Number evaluate [vars])
+  (^String toStringPostfix []))
 
 (deftype Const [value]
   IExpression
   (evaluate [this _] (.-value this))
+  (toStringPostfix [this] (str (.-value this)))
   Object
   (toString [this] (str (.-value this))))
 (defn Constant [value] (Const. value))
@@ -45,6 +47,7 @@
 (deftype Var [name]
   IExpression
   (evaluate [this vars] (vars (.-name this)))
+  (toStringPostfix [this] (str (.-name this)))
   Object
   (toString [this] (str (.-name this))))
 (defn Variable [name] (Var. name))
@@ -52,25 +55,50 @@
 (deftype Expression [f sign args]
   IExpression
   (evaluate [this vars] (apply f (mapv #(.evaluate % vars) (.-args this))))
+  (toStringPostfix [this] (str "(" (clojure.string/join " " (mapv #(.toStringPostfix %) (.-args this))) " " (.-sign this) ")"))
   Object
   (toString [this] (str "(" (.-sign this) " " (clojure.string/join " " (.-args this)) ")")))
-(defn Add      [& args] (Expression. + "+" args))
+(defn Add [& args] (Expression. + "+" args))
 (defn Subtract [& args] (Expression. - "-" args))
 (defn Multiply [& args] (Expression. * "*" args))
-(defn Divide   [& args] (Expression. fixed-numbers-divide "/" args))
-(defn Negate   [& args] (Expression. - "negate" args))
-(defn Sin      [& args] (Expression. math/sin "sin" args))
-(defn Cos      [& args] (Expression. math/cos "cos" args))
-(defn Sinh     [& args] (Expression. math/sinh "sinh" args))
-(defn Cosh     [& args] (Expression. math/cosh "cosh" args))
-(defn Atan     [& args] (Expression. math/atan "atan" args))
-(defn Atan2    [& args] (Expression. math/atan2 "atan2" args))
+(defn Divide [& args] (Expression. fixed-numbers-divide "/" args))
+(defn Negate [& args] (Expression. - "negate" args))
+(defn Sin [& args] (Expression. math/sin "sin" args))
+(defn Cos [& args] (Expression. math/cos "cos" args))
+(defn Sinh [& args] (Expression. math/sinh "sinh" args))
+(defn Cosh [& args] (Expression. math/cosh "cosh" args))
+(defn Atan [& args] (Expression. math/atan "atan" args))
+(defn Atan2 [& args] (Expression. math/atan2 "atan2" args))
 (def ArcTan Atan)
 (def ArcTan2 Atan2)
 
 (defn evaluate [expr vars] (.evaluate expr vars))
 (defn toString [expr] (.toString expr))
+(defn toStringPostfix [expr] (.toStringPostfix expr))
 
-(def ops-object {'+ Add '- Subtract '* Multiply '/ Divide 'negate Negate
+(def ops-object {'+   Add '- Subtract '* Multiply '/ Divide 'negate Negate
                  'sin Sin 'cos Cos 'sinh Sinh 'cosh Cosh 'atan Atan 'atan2 Atan2})
 (def parseObject (parser Constant Variable ops-object))
+
+; Combinator parser
+(load-file "parser.clj")
+
+(defparser parseObjectPostfix
+           *all-chars (mapv char (range 0 128))
+           (*chars [p] (+char (apply str (filter p *all-chars))))
+           *digit (*chars #(Character/isDigit %))
+           *number (+str (+plus *digit))
+           *const (+seqf (comp Constant read-string str) (+opt (+or \- \+)) *number \. *number)
+           *variable (+map (comp Variable str) (+char "xyz"))
+           (*identifier [name] (+str (apply +seq (map +char (clojure.string/split name #"")))))
+           *operator (+map (comp ops-object symbol) (apply +or (map (comp *identifier str) (keys ops-object))))
+           (*char-ignore [chs] (+ignore (+char chs)))
+           *space (*chars #(Character/isWhitespace %))
+           *ws (+ignore (+star *space))
+           *value (+seqn 1
+                    (+char "(") *ws
+                    (+seq (+star (+seqn 0 (+or *const *variable (delay *expression)) *ws)) *operator)
+                    *ws (+char ")"))
+           *expression (+map (fn [[args op]] (apply op args)) *value)
+           *parseObjectPostfix (+seqn 0 *ws(+or *const *variable *expression) *ws))
+

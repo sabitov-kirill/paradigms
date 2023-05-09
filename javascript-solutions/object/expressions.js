@@ -69,7 +69,7 @@ Operator.prototype = {
         return new this.constructor(...this.expressions.map(expr => expr.diff(diffVariableName)));
     },
     toString: function () {
-        return this.expressions.reduce(expr => expr.toString() + " ") + this.sign;
+        return this.expressions.join(' ') + ' ' + this.sign;
     },
     prefix: function () {
         return "(" + this.sign + ' ' + this.expressions.map(e => e.prefix()).join(' ') + ")";
