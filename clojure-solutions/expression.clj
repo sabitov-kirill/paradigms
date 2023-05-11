@@ -54,10 +54,10 @@
 
 (deftype Expression [f sign args]
   IExpression
-  (evaluate [this vars] (apply f (mapv #(.evaluate % vars) (.-args this))))
-  (toStringPostfix [this] (str "(" (clojure.string/join " " (mapv #(.toStringPostfix %) (.-args this))) " " (.-sign this) ")"))
+  (evaluate [_ vars] (apply f (mapv #(.evaluate % vars) args)))
+  (toStringPostfix [_] (str "(" (clojure.string/join " " (mapv #(.toStringPostfix %) args)) " " sign ")"))
   Object
-  (toString [this] (str "(" (.-sign this) " " (clojure.string/join " " (.-args this)) ")")))
+  (toString [_] (str "(" sign " " (clojure.string/join " " args) ")")))
 (defn Add [& args] (Expression. + "+" args))
 (defn Subtract [& args] (Expression. - "-" args))
 (defn Multiply [& args] (Expression. * "*" args))
