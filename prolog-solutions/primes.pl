@@ -24,4 +24,7 @@ prime_divisors(N, Divisors, Divisor) :- NextDivisor is Divisor + 1, prime_diviso
 
 twice([], []).
 twice([H | T], [H, H | TwiceTail]) :- twice(T, TwiceTail).
+triple([], []).
+triple([H | T], [H, H, H | TwiceTail]) :- triple(T, TwiceTail).
 square_divisors(N, SquareDivisors) :- prime_divisors(N, Divisors), twice(Divisors, SquareDivisors).
+cube_divisors(N, TripleDivisors) :- prime_divisors(N, Divisors), triple(Divisors, TripleDivisors).
