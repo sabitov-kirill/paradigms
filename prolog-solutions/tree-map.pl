@@ -15,6 +15,13 @@ map_get(node((RootKey, _), Left, Right), Key, Value) :-
     ( Key < RootKey, map_get(Left, Key, Value) );
       map_get(Right, Key, Value).
 
+map_values(nil, []).
+map_values(node((_, Value), Left, Right), Values) :-
+    map_values(Left, ValuesLeft),
+    map_values(Right, ValuesRight),
+    append(ValuesLeft, [Value], ValuesLeftCurrent),
+    append(ValuesLeftCurrent, ValuesRight, Values).
+
 % [(1,asd), (2,'123'), (3,sdf), (4,poqwe), (5,'132'), (6,fdg), (7,wert), (8,'234'), (9,werwer)]
 % node((5,'132'),
 %     node((3,sdf),
