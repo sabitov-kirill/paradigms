@@ -21,30 +21,3 @@ map_values(node((_, Value), Left, Right), Values) :-
     map_values(Right, ValuesRight),
     append(ValuesLeft, [Value], ValuesLeftCurrent),
     append(ValuesLeftCurrent, ValuesRight, Values).
-
-% [(1,asd), (2,'123'), (3,sdf), (4,poqwe), (5,'132'), (6,fdg), (7,wert), (8,'234'), (9,werwer)]
-% node((5,'132'),
-%     node((3,sdf),
-%         node((2,'123'),
-%             node((1,asd),
-%                 nil,
-%                 nil),
-%             nil),
-%         node((4,poqwe),
-%             nil,
-%             nil)
-%     ),
-%     node((8,'234'),
-%         node((7,wert),
-%             node((6,fdg),
-%                 nil,
-%                 nil
-%             ),
-%             nil
-%         ),
-%         node((9,werwer),
-%             nil,
-%             nil
-%         )
-%     )
-% )
